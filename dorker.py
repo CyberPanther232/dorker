@@ -81,7 +81,7 @@ def check_network():
 def perform_search(query, num_results, output_file, extra_info=False, user_agent=""):
     count = 0
     with open(output_file, 'a') as sources:
-        sources.write(f"Results for query: {query}\n\n")
+        sources.write(f"\nResults for query: {query}\n\n")
         try:
             for source in google_search(query, num_results, advanced=extra_info, user_agent=user_agent):
                 if extra_info:
@@ -118,7 +118,7 @@ parser.add_argument('-o', '--output', default='sources.txt', type=str, help="Set
 parser.add_argument('-d', '--display', action='store_true', help="Displays/prints the URLs from the query results", required=False)
 parser.add_argument('-i', '--info', action='store_true', help="Gathers advanced information such as title and description", required=False)
 parser.add_argument('-df', '--dork-file', type=str, help="Reads file with queries to run multiple queries at once", default="", required=False)
-parser.add_argument('-u', '--user-agent', type=str, help="Allows setting custom User-Agent string header (do not recommend)", default="", required=False)
+parser.add_argument('-u', '--user-agent', type=str, help="Allows setting custom User-Agent string header (not recommended)", default="", required=False)
 
 args = parser.parse_args()
 
