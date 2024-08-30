@@ -35,12 +35,12 @@ def perform_search(query, output_file, extra_info=False):
     with open(output_file, 'a') as sources:
         sources.write(f"Results for query: {query}\n\n")
         try:
-            for link in search(query, num_results=num_results, advanced=extra_info):
+            for link in search(query, num_results=num_results, sleep_interval=(random.randint(10, 25)), advanced=extra_info):
                 if extra_info:
                     sources.write(f'Link: {link}\n')
                     count += 1
                     if args.display:
-                        print(link)
+                        print(link.url)
                 else:
                     sources.write(f'Link: {link}\n')
                     count += 1
