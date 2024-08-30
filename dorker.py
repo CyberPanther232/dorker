@@ -29,13 +29,19 @@ def check_network():
         print(f"Network check failed: {e}")
         return False
 
+def set_header():
+    headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36'
+    }
+    return headers
+
 # Perform the search and write results to a file
 def perform_search(query, output_file, extra_info=False):
     count = 0
     with open(output_file, 'a') as sources:
         sources.write(f"Results for query: {query}\n\n")
         try:
-            for link in search(query, num_results=num_results, sleep_interval=(random.randint(10, 25)), advanced=extra_info):
+            for link in search(query, num_results=num_results, sleep_interval=(random.randint(10, 25)), advanced=extra_info, headers=set_header()):
                 if extra_info:
                     sources.write(f'Link: {link}\n')
                     count += 1
