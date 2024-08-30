@@ -37,8 +37,7 @@ def perform_search(query, output_file, extra_info=False):
         try:
             for link in search(query, num_results=num_results, advanced=extra_info):
                 if extra_info:
-                    items = link.split(',')
-                    sources.write(f'URL:{items[0]} | Title: {items[1]} | Description: {items[2]}\n')
+                    sources.write(f'Link: {link}\n')
                     count += 1
                     if args.display:
                         print(link)
