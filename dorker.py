@@ -1,7 +1,7 @@
 """
 Program: dorker.py
 Date Created: 28-Aug-2024
-Date Modified: 29-Aug-2024
+Date Modified: 30-Aug-2024
 Purpose: To automate Google search queries or Google dorks when looking for OSINT (open-source intelligence) or just looking for general source
 """
 
