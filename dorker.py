@@ -60,7 +60,47 @@ def google_search(query, num_results=15, advanced=False, user_agent=""):
 
     return search_results
 
+def google_api_search(query, api_key, search_engine_id, num_results=15, advanced=False):
+    result_count = 0
+    
+    url = f"https://www.googleapis.com/customsearch/v1?key={api_key}&cx={search_engine_id}&q={query}&start=1"
+    
+    data = requests.get(url).json
+    
+    search_items = data.get("items")
 
+    for i, search_item in enumerate(search_items, start=1):
+        if advanced:
+            if num_results < result_count:
+                result_count += 1
+                
+                try:
+                    long_description = search_item['pagemap']['metatags'][0]["og:description"]
+                except KeyError:
+                    long_description = "N/A"
+                    
+                title = search_item.get("title")
+                
+                snippet = search_item.get("snippet")
+                
+                html_snippet = search_item.get("htmlSnippet")
+                
+                link = search_item.get("link")
+                
+                return f"Source: Title: {title} | Long Description: {long_description} | Short Description: {snippet} | HTML Snippet: {html_snippet} | URL: {link}\n"
+        
+        else:
+            if num_results < result_count:
+                result_count += 1
+                
+                title = search_item.get("title")
+                
+                snippet = search_item.get("snippet")
+                
+                link = search_item.get("link")
+                
+                return f"Source: Title: {title} | Short Description: {snippet} | URL: {link}\n"
+            
 def validate_query(query):
     """Ensure the search query is valid and non-empty."""
     if not query or len(query.strip()) == 0:
@@ -77,35 +117,38 @@ def check_network():
         print(f"Network check failed: {e}")
         return False
 
-# Perform the search and write results to a file
-def perform_search(query, num_results, output_file, extra_info=False, user_agent=""):
+def perform_api_search(query, num_results, output_file, api, search_engine, advanced=extra_info):
     count = 0
     with open(output_file, 'a') as sources:
-        sources.write(f"\nResults for query: {query}\n\n")
+        sources.write(f'Results for query: {query}\n\n')
         try:
-            for source in google_search(query, num_results, advanced=extra_info, user_agent=user_agent):
-                if extra_info:
-                    sources.write(f'Source: {source}\n')
-                    count += 1
-                    if args.display:
-                        print(source)
-                else:
-                    sources.write(f'Source: {source}\n')
-                    count += 1
-                    if args.display:
-                        print(source)
+            for source in google_api_search(query, api, search_engine, num_results, advanced):
+                sources.write(source)
+                count += 1
+                if args.display:
+                    print(source)
+                    
+        except Exception as e:
+            if e:    
+                print(f"An error occurred during the search: {e}")
+    return count
+        
+# Perform the search and write results to a file
+def perform_search(query, num_results, output_file, advanced=False, user_agent=""):
+    count = 0
+    with open(output_file, 'a') as sources:
+        sources.write(f"Results for query: {query}\n\n")
+        try:
+            for source in google_search(query, num_results, advanced, user_agent=user_agent):
+                sources.write(f'Source: {source}\n')
+                count += 1
+                if args.display:
+                    print(source)
         except Exception as e:
             if e:
                 print(f"An error occurred during the search: {e}")
-                print("\nAdding buffer time between search queries...")
-                buffer = random.randint(0, 15) ** 2
-                print(f"Waiting {buffer} seconds before trying another...")
-                time.sleep(buffer)
-            else:
-                print(f"An error occurred during the search: {e}")
-                pass
+                
     return count
-
 
 parser = argparse.ArgumentParser(
     prog="dorker.py",
@@ -119,6 +162,8 @@ parser.add_argument('-d', '--display', action='store_true', help="Displays/print
 parser.add_argument('-i', '--info', action='store_true', help="Gathers advanced information such as title and description", required=False)
 parser.add_argument('-df', '--dork-file', type=str, help="Reads file with queries to run multiple queries at once", default="", required=False)
 parser.add_argument('-u', '--user-agent', type=str, help="Allows setting custom User-Agent string header (not recommended)", default="", required=False)
+parser.add_argument('-a', '--api-key', type=str, help="Sets Custom Search Google JSON Api key for fast non-violating queries", default="", required=False)
+parser.add_argument('-seid', '--search-engine-id', type=str, help="Sets Custom Search Google JSON Api key for fast non-violating queries", default="", required=False)
 
 args = parser.parse_args()
 
@@ -129,6 +174,8 @@ output_file = args.output
 dork_file = args.dork_file
 advanced = args.info
 user_agent = args.user_agent
+api = args.api_key
+search_engine = args.search_engine_id
 
 # Validate the input
 try:
@@ -153,26 +200,70 @@ if dork_file:
             dork = line.strip()
             if dork:
                 if args.info:
-                    try:
-                        time.sleep(random.randint(10, 50))
-                        validate_query(dork)
-                        count = perform_search(dork, num_results, output_file, True, user_agent=user_agent)
-                        print(f"\nNumber of results found for query '{dork}': {count}\n\n")
-                    except ValueError as e:
-                        print(f"Error: {e}")
+                    if api_key == "" and search_engine == "":
+                        try:
+                            print("Running Google non api search!")
+                            time.sleep(random.randint(10, 50))
+                            validate_query(dork)
+                            count = perform_search(dork, num_results, output_file, extra_info=True, user_agent=user_agent)
+                            print(f"\nNumber of results found for query '{dork}': {count}\n\n")
+                        except ValueError as e:
+                            print(f"Error: {e}")
+                            
+                    elif api_key != "" and search_engine != "":
+                        try:
+                            print("Running Google custom api search!")
+                            time.sleep(random.randint(10, 50))
+                            validate_query(dork)
+                            count = perform_api_search(dork, num_results, output_file, api_key, search_engine, advanced=True)
+                        except ValueError as e:
+                            print(f"Error: {e}")
+
+                    else:
+                        print("Error! API Key and Search Engine ID must both be included if one is listed!")
+                        exit(1)     
+                    
                 else:
-                    try:
-                        time.sleep(random.randint(10, 50))
-                        validate_query(dork)
-                        count = perform_search(dork, output_file)
-                        print(f"\nNumber of results found for query '{dork}': {count}\n\n")
-                    except ValueError as e:
-                        print(f"Error: {e}")
+                    if api_key == "" and search_engine == "":
+                        try:
+                            print("Running Google non api search!")
+                            time.sleep(random.randint(10, 50))
+                            validate_query(dork)
+                            count = perform_search(dork, num_results, output_file, extra_info=True, user_agent=user_agent)
+                            print(f"\nNumber of results found for query '{dork}': {count}\n\n")
+                        except ValueError as e:
+                            print(f"Error: {e}")
+                            
+                    elif api_key != "" and search_engine != "":
+                        try:
+                            print("Running Google custom api search!")
+                            time.sleep(random.randint(10, 50))
+                            validate_query(dork)
+                            count = perform_api_search(dork, num_results, output_file, api_key, search_engine, advanced=True)
+                        except ValueError as e:
+                            print(f"Error: {e}")
+
+                    else:
+                        print("Error! API Key and Search Engine ID must both be included if one is listed!")
+                        exit(1)  
 else:
     if not dork:
         print("Error: No query provided. Use -q to specify a search query.")
         exit(1)
-    count = perform_search(dork, num_results, output_file, extra_info=advanced, user_agent=user_agent)
+    
+    if api_key == "" and search_engine == "":
+        validate_query(dork)
+        count = perform_search(dork, num_results, output_file, extra_info=advanced, user_agent=user_agent)
+    
+    elif api_key != "" and search_engine != "":
+        print("Running Google custom api search!")
+        validate_query(dork)
+        count = perform_api_search(dork, num_results, output_file, api_key, search_engine, extra_info=advanced)
+        
+    else:
+        print("Error! API Key and Search Engine ID must both be included if one is listed!")
+        exit(1)
+    
     print(f"\nNumber of results found for query '{dork}': {count}")
 
 print(f"Results saved to {output_file}")
