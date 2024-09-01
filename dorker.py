@@ -135,7 +135,7 @@ def perform_api_search(query, num_results, output_file, api, search_engine, adva
             search_results = google_api_search(query, api, search_engine, num_results, advanced)
             
             # Combine all results into one line
-            combined_results = " | ".join(search_results)
+            combined_results = "\n".join(search_results)
             sources.write(f'{combined_results}\n')
             
             if args.display:
@@ -216,19 +216,19 @@ if dork_file:
                     if api == "" and search_engine == "":
                         try:
                             print("Running Google non api search!")
-                            time.sleep(random.randint(10, 50))
                             validate_query(dork)
                             count = perform_search(dork, num_results, output_file, extra_info=True, user_agent=user_agent)
                             print(f"\nNumber of results found for query '{dork}': {count}\n\n")
+                            time.sleep(random.randint(10, 50))
                         except ValueError as e:
                             print(f"Error: {e}")
                             
                     elif api != "" and search_engine != "":
                         try:
                             print("Running Google custom api search!")
-                            time.sleep(random.randint(10, 50))
                             validate_query(dork)
                             count = perform_api_search(dork, num_results, output_file, api, search_engine, advanced=True)
+                            time.sleep(random.randint(10, 50))
                         except ValueError as e:
                             print(f"Error: {e}")
 
@@ -244,15 +244,16 @@ if dork_file:
                             validate_query(dork)
                             count = perform_search(dork, num_results, output_file, extra_info=True, user_agent=user_agent)
                             print(f"\nNumber of results found for query '{dork}': {count}\n\n")
+                            time.sleep(random.randint(10, 50))
                         except ValueError as e:
                             print(f"Error: {e}")
                             
                     elif api != "" and search_engine != "":
                         try:
                             print("Running Google custom api search!")
-                            time.sleep(random.randint(10, 50))
                             validate_query(dork)
                             count = perform_api_search(dork, num_results, output_file, api, search_engine, advanced=True)
+                            time.sleep(random.randint(10, 50))
                         except ValueError as e:
                             print(f"Error: {e}")
 
