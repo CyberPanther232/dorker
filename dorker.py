@@ -62,44 +62,55 @@ def google_search(query, num_results=15, advanced=False, user_agent=""):
 
 def google_api_search(query, api_key, search_engine_id, num_results=15, advanced=False):
     result_count = 0
+    start = 1
+    results = []
     
-    url = f"https://www.googleapis.com/customsearch/v1?key={api_key}&cx={search_engine_id}&q={query}&start=1"
-    
-    data = requests.get(url).json
-    
-    search_items = data.get("items")
-
-    for i, search_item in enumerate(search_items, start=1):
-        if advanced:
-            if num_results < result_count:
-                result_count += 1
-                
-                try:
-                    long_description = search_item['pagemap']['metatags'][0]["og:description"]
-                except KeyError:
-                    long_description = "N/A"
-                    
-                title = search_item.get("title")
-                
-                snippet = search_item.get("snippet")
-                
-                html_snippet = search_item.get("htmlSnippet")
-                
-                link = search_item.get("link")
-                
-                return f"Source: Title: {title} | Long Description: {long_description} | Short Description: {snippet} | HTML Snippet: {html_snippet} | URL: {link}\n"
+    while result_count < num_results:
+        url = f"https://www.googleapis.com/customsearch/v1?key={api_key}&cx={search_engine_id}&q={query}&start={start}"
+        response = requests.get(url)
         
-        else:
-            if num_results < result_count:
-                result_count += 1
+        if response.status_code != 200:
+            return [f"An error occurred during the search: {response.status_code} {response.reason}"]
+        
+        data = response.json()
+        search_items = data.get("items", [])
+        
+        if not search_items:
+            break
+
+        for search_item in search_items:
+            if result_count >= num_results:
+                break
+
+            title = search_item.get("title", "N/A")
+            snippet = search_item.get("snippet", "N/A")
+            link = search_item.get("link", "N/A")
+
+            if advanced:
+                long_description = search_item.get('pagemap', {}).get('metatags', [{}])[0].get("og:description", "N/A")
+                html_snippet = search_item.get("htmlSnippet", "N/A")
                 
-                title = search_item.get("title")
-                
-                snippet = search_item.get("snippet")
-                
-                link = search_item.get("link")
-                
-                return f"Source: Title: {title} | Short Description: {snippet} | URL: {link}\n"
+                result = (
+                    f"Source {result_count+1}: Title: {title} | "
+                    f"Long Description: {long_description} | "
+                    f"Short Description: {snippet} | "
+                    f"HTML Snippet: {html_snippet} | "
+                    f"URL: {link}\n"
+                )
+            else:
+                result = (
+                    f"Source {result_count+1}: Title: {title} | "
+                    f"Short Description: {snippet} | "
+                    f"URL: {link}\n"
+                )
+            
+            results.append(result)
+            result_count += 1
+        
+        # Increment start to fetch the next batch of results
+        start += 10
+    
+    return results
             
 def validate_query(query):
     """Ensure the search query is valid and non-empty."""
@@ -117,21 +128,23 @@ def check_network():
         print(f"Network check failed: {e}")
         return False
 
-def perform_api_search(query, num_results, output_file, api, search_engine, advanced=extra_info):
-    count = 0
+def perform_api_search(query, num_results, output_file, api, search_engine, advanced=False):
     with open(output_file, 'a') as sources:
         sources.write(f'Results for query: {query}\n\n')
         try:
-            for source in google_api_search(query, api, search_engine, num_results, advanced):
-                sources.write(source)
-                count += 1
-                if args.display:
-                    print(source)
-                    
+            search_results = google_api_search(query, api, search_engine, num_results, advanced)
+            
+            # Combine all results into one line
+            combined_results = " | ".join(search_results)
+            sources.write(f'{combined_results}\n')
+            
+            if args.display:
+                print(combined_results)
+                
         except Exception as e:
-            if e:    
-                print(f"An error occurred during the search: {e}")
-    return count
+            print(f"An error occurred during the search: {e}")
+    
+    return len(search_results)
         
 # Perform the search and write results to a file
 def perform_search(query, num_results, output_file, advanced=False, user_agent=""):
@@ -200,7 +213,7 @@ if dork_file:
             dork = line.strip()
             if dork:
                 if args.info:
-                    if api_key == "" and search_engine == "":
+                    if api == "" and search_engine == "":
                         try:
                             print("Running Google non api search!")
                             time.sleep(random.randint(10, 50))
@@ -210,12 +223,12 @@ if dork_file:
                         except ValueError as e:
                             print(f"Error: {e}")
                             
-                    elif api_key != "" and search_engine != "":
+                    elif api != "" and search_engine != "":
                         try:
                             print("Running Google custom api search!")
                             time.sleep(random.randint(10, 50))
                             validate_query(dork)
-                            count = perform_api_search(dork, num_results, output_file, api_key, search_engine, advanced=True)
+                            count = perform_api_search(dork, num_results, output_file, api, search_engine, advanced=True)
                         except ValueError as e:
                             print(f"Error: {e}")
 
@@ -224,7 +237,7 @@ if dork_file:
                         exit(1)     
                     
                 else:
-                    if api_key == "" and search_engine == "":
+                    if api == "" and search_engine == "":
                         try:
                             print("Running Google non api search!")
                             time.sleep(random.randint(10, 50))
@@ -234,12 +247,12 @@ if dork_file:
                         except ValueError as e:
                             print(f"Error: {e}")
                             
-                    elif api_key != "" and search_engine != "":
+                    elif api != "" and search_engine != "":
                         try:
                             print("Running Google custom api search!")
                             time.sleep(random.randint(10, 50))
                             validate_query(dork)
-                            count = perform_api_search(dork, num_results, output_file, api_key, search_engine, advanced=True)
+                            count = perform_api_search(dork, num_results, output_file, api, search_engine, advanced=True)
                         except ValueError as e:
                             print(f"Error: {e}")
 
@@ -251,14 +264,14 @@ else:
         print("Error: No query provided. Use -q to specify a search query.")
         exit(1)
     
-    if api_key == "" and search_engine == "":
+    if api == "" and search_engine == "":
         validate_query(dork)
         count = perform_search(dork, num_results, output_file, extra_info=advanced, user_agent=user_agent)
     
-    elif api_key != "" and search_engine != "":
+    elif api != "" and search_engine != "":
         print("Running Google custom api search!")
         validate_query(dork)
-        count = perform_api_search(dork, num_results, output_file, api_key, search_engine, extra_info=advanced)
+        count = perform_api_search(dork, num_results, output_file, api, search_engine, advanced)
         
     else:
         print("Error! API Key and Search Engine ID must both be included if one is listed!")
