@@ -242,7 +242,7 @@ if dork_file:
                             print("Running Google non api search!")
                             time.sleep(random.randint(10, 50))
                             validate_query(dork)
-                            count = perform_search(dork, num_results, output_file, extra_info=True, user_agent=user_agent)
+                            count = perform_search(dork, num_results, output_file, advanced=advanced, user_agent=user_agent)
                             print(f"\nNumber of results found for query '{dork}': {count}\n\n")
                             time.sleep(random.randint(10, 50))
                         except ValueError as e:
@@ -267,7 +267,7 @@ else:
     
     if api == "" and search_engine == "":
         validate_query(dork)
-        count = perform_search(dork, num_results, output_file, extra_info=advanced, user_agent=user_agent)
+        count = perform_search(dork, num_results, output_file, advanced=advanced, user_agent=user_agent)
     
     elif api != "" and search_engine != "":
         print("Running Google custom api search!")
