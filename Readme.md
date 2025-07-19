@@ -1,38 +1,43 @@
-dorker.py: Your Automated Google Dorking Tool
+# dorker.py: Your Automated Google Dorking Tool
+
 http://googleusercontent.com/image_generation_content/8
 
-Program Overview
-dorker.py is a versatile Python script designed to automate Google search queries, specifically focusing on Google dorks. Whether you're conducting Open-Source Intelligence (OSINT) gathering or simply looking for general information, dorker.py streamlines the process of extracting relevant data from Google.
+## Program Overview
 
-Features
-Automated Google Searches: Execute single or multiple Google dork queries efficiently.
+`dorker.py` is a versatile Python script designed to **automate Google search queries**, specifically focusing on **Google dorks**. Whether you're conducting **Open-Source Intelligence (OSINT)** gathering or simply looking for general information, `dorker.py` streamlines the process of extracting relevant data from Google.
 
-Flexible Output: Save search results to a specified file, with an option to display them directly in the console.
+## Features
 
-Configurable Results: Control the number of search results retrieved per query.
+* **Automated Google Searches**: Execute single or multiple Google dork queries efficiently.
 
-Advanced Information Extraction: Capture detailed information like titles, descriptions, and links (when available via direct scraping or API).
+* **Flexible Output**: Save search results to a specified file, with an option to display them directly in the console.
 
-Custom User-Agent Support: Option to specify a custom User-Agent string for requests (use with caution).
+* **Configurable Results**: Control the number of search results retrieved per query.
 
-Google Custom Search API Integration: Utilize the Google Custom Search JSON API for faster, more reliable, and less rate-limited queries.
+* **Advanced Information Extraction**: Capture detailed information like titles, descriptions, and links (when available via direct scraping or API).
 
-Dork File Support: Process a list of dorks from a file to run multiple queries in succession.
+* **Custom User-Agent Support**: Option to specify a custom User-Agent string for requests (use with caution).
 
-Network Connectivity Check: Ensures an active internet connection before initiating searches.
+* **Google Custom Search API Integration**: Utilize the Google Custom Search JSON API for faster, more reliable, and less rate-limited queries.
 
-Getting Started
-Prerequisites
-Before running dorker.py, make sure you have the following Python libraries installed:
+* **Dork File Support**: Process a list of dorks from a file to run multiple queries in succession.
 
-requests
+* **Network Connectivity Check**: Ensures an active internet connection before initiating searches.
 
-beautifulsoup4
+## Getting Started
+
+### Prerequisites
+
+Before running `dorker.py`, make sure you have the following Python libraries installed:
+
+* `requests`
+
+* `beautifulsoup4`
 
 You can install them using pip:
 
+```bash
 pip install requests beautifulsoup4
-
 Google Custom Search API (Optional but Recommended)
 For more robust and efficient querying, especially for advanced information extraction or frequent use, it's highly recommended to use the Google Custom Search API.
 
@@ -45,8 +50,9 @@ Create a Custom Search Engine: Visit the Custom Search Engine page, create a new
 Usage
 dorker.py can be run from the command line with various arguments.
 
-python dorker.py -h
+Bash
 
+python dorker.py -h
 Command-Line Arguments
 -r or --results: Sets the maximum number of results to retrieve (default: 15).
 
@@ -70,32 +76,36 @@ Examples
 Basic Search
 To perform a simple search and save results to sources.txt:
 
-python dorker.py -q "inurl:admin login"
+Bash
 
+python dorker.py -q "inurl:admin login"
 Display Results to Console
 To display results directly in the terminal:
 
-python dorker.py -q "site:example.com intitle:index.of" -d
+Bash
 
+python dorker.py -q "site:example.com intitle:index.of" -d
 Advanced Information (using API)
 To get detailed results (title, description, link) using your Google Custom Search API:
 
-python dorker.py -q "site:github.com intext:password" -i -a YOUR_API_KEY -seid YOUR_SEARCH_ENGINE_ID
+Bash
 
+python dorker.py -q "site:github.com intext:password" -i -a YOUR_API_KEY -seid YOUR_SEARCH_ENGINE_ID
 Running Multiple Dorks from a File
 Create a file named dorks.txt (or any other name) with one dork per line:
 
 inurl:wp-admin
 intitle:"index of" site:example.com
 "confidential" filetype:pdf
-
 Then run dorker.py with the -df option:
 
+Bash
+
 python dorker.py -df dorks.txt -o my_dork_results.txt
-
 Custom User-Agent
-python dorker.py -q "latest security vulnerabilities" -u "MyCustomBrowser/1.0"
+Bash
 
+python dorker.py -q "latest security vulnerabilities" -u "MyCustomBrowser/1.0"
 Important Notes
 Respect Rate Limits: When using the direct Google search (non-API), be mindful of Google's rate limits. Excessive requests can lead to temporary IP blocking. The script includes a random time.sleep to help mitigate this, especially when processing dork files.
 
@@ -105,7 +115,5 @@ API Usage: Using the Google Custom Search API is generally more reliable and avo
 
 Contribution
 Feel free to fork this repository, open issues, or submit pull requests. Contributions are welcome!
-This is the dorker! The dorker is a simple tool that will allow you to perform automated Google searches or Google dorks to gather information for either research or OSINT (open-source intelligence). 
-
 
 DISCLAIMER: This script is a proof-of-concept tool intended for ethical, informational, and authorized use only! Any illegal or unethical usage of this script is prohibited and the you will be responsible for any misuse of this script!
