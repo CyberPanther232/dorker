@@ -1,5 +1,5 @@
 dorker.py: Your Automated Google Dorking Tool
-![logo]("")
+http://googleusercontent.com/image_generation_content/8
 
 Program Overview
 dorker.py is a versatile Python script designed to automate Google search queries, specifically focusing on Google dorks. Whether you're conducting Open-Source Intelligence (OSINT) gathering or simply looking for general information, dorker.py streamlines the process of extracting relevant data from Google.
@@ -105,7 +105,6 @@ API Usage: Using the Google Custom Search API is generally more reliable and avo
 
 Contribution
 Feel free to fork this repository, open issues, or submit pull requests. Contributions are welcome!
-
 This is the dorker! The dorker is a simple tool that will allow you to perform automated Google searches or Google dorks to gather information for either research or OSINT (open-source intelligence). 
 
 
