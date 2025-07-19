@@ -1,6 +1,7 @@
 # dorker.py: Your Automated Google Dorking Tool
 
-http://googleusercontent.com/image_generation_content/8
+![image]([http://googleusercontent.com/image_generation_content/8](https://github.com/CyberPanther232/dorker/blob/9eba520b465ee68e03b5485f7693e6854631fb13/Dorker_Script_Logo.png))
+
 
 ## Program Overview
 
