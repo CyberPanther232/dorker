@@ -1,6 +1,8 @@
 # dorker.py: Your Automated Google Dorking Tool
 
-[!image](https://github.com/CyberPanther232/pypass/blob/master/pypass_logo_mini.png)
+<p align="center">
+  <img src="https://github.com/CyberPanther232/dorker/blob/main/Dorker_Script_Logo_mini.png" alt="Description" width="300"/>
+</p>
 
 ## Program Overview
 
