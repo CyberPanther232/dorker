@@ -116,4 +116,4 @@ API Usage: Using the Google Custom Search API is generally more reliable and avo
 Contribution
 Feel free to fork this repository, open issues, or submit pull requests. Contributions are welcome!
 
-DISCLAIMER: This script is a tool intended for ethical, informational, and authorized use only! Any illegal or unethical usage of this script is prohibited and the you will be responsible for any misuse!
+DISCLAIMER: This script is a tool intended for ethical, informational, and authorized use only! Any illegal or unethical usage of this script is prohibited and the you will be responsible for any misuse of this script!
